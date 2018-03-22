@@ -1,0 +1,5 @@
+ROUTE['/api/.*':'GET':'none']="searchFunction"
+ROUTE['/api/.*':'POST':'none']="searchFunction"
+ROUTE['/api/.*':'PUT':'none']="searchFunction"
+ROUTE['/api/.*':'DELETE':'none']="searchFunction"
+ROUTE['/api/.*':'PATCH':'none']="searchFunction"

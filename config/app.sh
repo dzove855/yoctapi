@@ -1,0 +1,8 @@
+application_name="yoctapi"
+html_dir="${DOCUMENT_ROOT%/}/../html"
+css_dir="${DOCUMENT_ROOT%/}/../css"
+js_dir="${DOCUMENT_ROOT%/}/../js"
+img_dir="${DOCUMENT_ROOT%/}/../img"
+fonts_dir="${DOCUMENT_ROOT%/}/../fonts"
+etc_conf_dir="/etc/$application_name"
+auditing="0"
