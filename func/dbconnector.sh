@@ -117,7 +117,7 @@ function db-post ()
         printf -v value "%q" "$value"
         printf -v result "%q" "$result"
 
-        _insert+="\`${value}\`='$result'"
+        _insert+="\`${value}\`='$result',"
     done
 
     _query+=" ${_insert%,}"
