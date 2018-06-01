@@ -127,7 +127,11 @@ function db-post ()
 
 function dbconnector ()
 {
-    local table="$1" action="$2" method="$3"
+    local table action method
+
+    table="${uri[1]}"
+    action="${uri[2]}"
+    method="$REQUEST_METHOD"
 
     case "$method" in
         GET)            db-get "$table" "$action"                                       ;;

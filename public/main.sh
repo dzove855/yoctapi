@@ -18,7 +18,8 @@ tmpStderr="$(mktemp -p $TMPDIR)"
 trap "rm $tmpStdout; rm $tmpStderr" EXIT
 
 # Save stdout and stderr to a file, to print out the both
-route::check 1>$tmpStdout 2>$tmpStderr
+# route::check 1>$tmpStdout 2>$tmpStderr
+$router 1>$tmpStdout 2>$tmpStderr
 
 # Send header
 http::send::out
