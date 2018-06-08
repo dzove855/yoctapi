@@ -14,6 +14,10 @@ router="route::api::mode"
 # Defaults routes
 #AUTH['/':'GET']="htpasswd"
 #AUTH['/':'POST']="htpasswd"
-AUTH['/':'GET']="none"
+#AUTH['/':'GET']="none"
 
-RIGHTS['/':'GET']="none"
+#RIGHTS['/':'GET']="none"
+
+auth_method="key::auth::start"
+authorization_key="vehbo"
+auth_check="auth::api"

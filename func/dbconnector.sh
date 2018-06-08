@@ -1,9 +1,7 @@
 function db-get ()
 {
-    local table="${1%%;*}" action="${2%%;*}" _select _where _limit mysql_command="mysql-connect-slave"
+    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")" _select _where _limit mysql_command="mysql-connect-slave"
 
-    action="$(url_decode $action)"
-    action="${action//\\x/%}"
     printf -v action "%q" "$action"
     printf -v table "%q" "$table"
 
@@ -33,10 +31,8 @@ function db-get ()
 
 function db-put ()
 {
-    local table="${1%%;*}" action="${2%%;*}" _query _json _update value result
+    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")" _query _json _update value result
 
-    action="$(url_decode $action)"
-    action="${action//\\x/%}"
     printf -v action "%q" "$action"
     printf -v table "%q" "$table"
 
@@ -76,10 +72,8 @@ function db-put ()
 
 function db-delete ()
 {
-    local table="${1%%;*}" action="${2%%;*}"
+    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")"
 
-    action="$(url_decode $action)"
-    action="${action//\\x/%}"
     printf -v action "%q" "$action"
     printf -v table "%q" "$table"
 
