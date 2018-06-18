@@ -27,6 +27,6 @@ function mysql-to-json ()
         fi
     done < <($mysql_command "${*:2}" | grep -v -e '^$' | tr -d '\r')
 
-    echo "{ \"$table\": [ ${results%,} ] }"
+    echo "{ \"$table\": { ${results%,} } }"
 }
 
