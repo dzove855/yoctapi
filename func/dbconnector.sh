@@ -8,9 +8,9 @@ function db-get ()
 
     display="${DB_GET[$matcher:'display']:-$matcher}"
 
-    if [[ ! -z "${DB_GET['selectfields']}" ]]
+    if [[ ! -z "${DB_GET[$matcher:'selectfields']}" ]]
     then
-	_select="${DB_GET['selectfields']%%;*}"
+	_select="${DB_GET[$matcher:'selectfields']%%;*}"
     fi
 
     if [[ -z "${DB_GET[$matcher:'where']}" ]]
