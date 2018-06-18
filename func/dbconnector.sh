@@ -33,7 +33,7 @@ function db-put ()
 
     [[ -z "${POST['json']}" ]] && return
 
-    [[ -z "${DB_PUT[$table:'where']}" ]] && return
+    [[ -z "${DB_PUT[$matcher:'where']}" ]] && return
     
     table="${DB_PUT[$matcher:'table']:-$matcher}"
 
@@ -59,9 +59,9 @@ function db-put ()
         _update+="\`${value}\`='$result',"
     done
 
-    _query+=" ${_update%,} where ${DB_PUT[$table:'where']}='$action'"
+    _query+=" ${_update%,} where ${DB_PUT[$matcher:'where']}='$action'"
 
-    mysql-connector-master "$_query" &>/dev/null && echo "{ \"msg\": \"Succesfully updated!\", \"${DB_PUT[$table:'where']}\": \"$action\", \"status\":\"$?\" }"
+    mysql-connector-master "$_query" &>/dev/null && echo "{ \"msg\": \"Succesfully updated!\", \"${DB_PUT[$matcher:'where']}\": \"$action\", \"status\":\"$?\" }"
 
 }
 
@@ -71,18 +71,18 @@ function db-delete ()
 
     [[ -z "$action" ]] && return
 
-    [[ -z "${DB_DELETE[$table:'where']}" ]] && return
+    [[ -z "${DB_DELETE[$matcher:'where']}" ]] && return
 
     table="${DB_DELETE[$matcher:'table']:-$matcher}"
 
-    mysql-connector-master "delete from $table where ${DB_DELETE[$table:'where']}='$action'" &>/dev/null && echo '{ "msg": "Sccesfully removed!" }'
+    mysql-connector-master "delete from $table where ${DB_DELETE[$matcher:'where']}='$action'" &>/dev/null && echo '{ "msg": "Sccesfully removed!" }'
 }
 
 function db-post ()
 {
     local matcher="$1" _query _json _insert value result table
 
-    [[ -z "$table" ]] && return
+    [[ -z "$matcher" ]] && return
     
     [[ -z "${POST['json']}" ]] && return
 
