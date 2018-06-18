@@ -1,46 +1,41 @@
 function db-get ()
 {
-    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")" _select _where _limit mysql_command="mysql-connect-slave"
+    local matcher="$1" action="$2" _select _where _limit mysql_command="mysql-connect-slave" table display
 
-    printf -v action "%q" "$action"
-    printf -v table "%q" "$table"
+    table="${DB_GET[$matcher:'table']:-$matcher}"
 
-    if [[ -z "${DB_GET[$table:'column']}" ]]
+    _select="${DB_GET[$matcher:'column']:-*}"
+
+    display="${DB_GET[$matcher:'display']:-$matcher}"
+
+    if [[ ! -z "${DB_GET['selectfields']}" ]]
     then
-        _select="*"
-    else
-        _select="${DB_GET[$table:'column']}"
+	_select="${DB_GET['selectfields']%%;*}"
     fi
 
-    if [[ ! -z "${GET['selectfields']}" ]]
-    then
-	_select="$(url_decode ${GET['selectfields']%%;*})"
-    fi
-
-    if [[ -z "${DB_GET[$table:'where']}" ]]
+    if [[ -z "${DB_GET[$matcher:'where']}" ]]
     then
         _where=""
     else
-        _where="where ${DB_GET[$table:'where']} like '$action'"
+        _where="where ${DB_GET[$matcher:'where']} like '$action'"
     fi
 
-    ! [[ -z "${GET['limit']}" ]] && _limit="limit $(url_decode ${GET['limit']%%;*})"
+    ! [[ -z "${GET['limit']}" ]] && _limit="limit ${GET['limit']%%;*}"
 
-    mysql-to-json "select $_select from $table $_where $_limit"
+    mysql-to-json "$display" "select $_select from $table $_where $_limit"
 }
 
 function db-put ()
 {
-    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")" _query _json _update value result
-
-    printf -v action "%q" "$action"
-    printf -v table "%q" "$table"
+    local matcher="$1" action="$2" _query _json _update value result table
 
     [[ -z "$action" ]] && return
 
     [[ -z "${POST['json']}" ]] && return
 
     [[ -z "${DB_PUT[$table:'where']}" ]] && return
+    
+    table="${DB_PUT[$matcher:'table']:-$matcher}"
 
     _json="$(echo "${POST['json']}" | jq .data)"
 
@@ -72,27 +67,26 @@ function db-put ()
 
 function db-delete ()
 {
-    local table="${1%%;*}" action="$(urlencode -d "${2%%;*}")"
-
-    printf -v action "%q" "$action"
-    printf -v table "%q" "$table"
+    local matcher="$1" action="$2" table
 
     [[ -z "$action" ]] && return
 
     [[ -z "${DB_DELETE[$table:'where']}" ]] && return
+
+    table="${DB_DELETE[$matcher:'table']:-$matcher}"
 
     mysql-connector-master "delete from $table where ${DB_DELETE[$table:'where']}='$action'" &>/dev/null && echo '{ "msg": "Sccesfully removed!" }'
 }
 
 function db-post ()
 {
-    local table="${1%%;*}" _query _json _insert value result
+    local matcher="$1" _query _json _insert value result table
 
     [[ -z "$table" ]] && return
-
-    printf -v table "%q" "$table"
     
     [[ -z "${POST['json']}" ]] && return
+
+    table="${DB_POST[$matcher:'table']:-$matcher}"
 
     _json="$(echo "${POST['json']}" | jq .data)"
 
@@ -121,19 +115,28 @@ function db-post ()
 
 function dbconnector ()
 {
-    local table action method
+    local matcher action method
 
-    table="${uri[1]}"
-    action="${uri[2]}"
+    matcher="${uri[1]%%;*}"
+    action="$(urlencode -d "${uri[2]%%;*}")"
     method="$REQUEST_METHOD"
 
+    printf -v matcher "%q" "$matcher"
+    printf -v action "%q" "$action"
+
     case "$method" in
-        GET)            db-get "$table" "$action"                                       ;;
-        PUT)            db-put "$table" "$action"                                       ;;
-        DELETE)         db-delete "$table" "$action"                                    ;;
-        POST)           db-post "$table"                                                ;;
-        *)              preordreMessage 500 "Method not allowed!"                       ;;
+        GET)            db-get "$matcher" "$action"                                     ;;
+        PUT)            db-put "$matcher" "$action"                                     ;;
+        DELETE)         db-delete "$matcher" "$action"                                  ;;
+        POST)           db-post "$matcher"                                              ;;
+        *)              fail "Method not allowed!"                                      ;;
     esac
 
+}
+
+function fail()
+{
+    http::send::status 500
+    echo '{ "msg": "Method not allowed!"'
 }
 
