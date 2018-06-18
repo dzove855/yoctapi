@@ -18,15 +18,26 @@ function mysql-to-json ()
     do
         if [[ "${line}" =~ .*row.* || "$line" == "END" ]]
         then
-            [[ ! -z "${arr[@]}" ]] && results+="\"${arr[$display]}\": $(array-to-json arr),"
+            if [[ "$display" == "$matcher" ]]
+            then
+                [[ ! -z "${arr[@]}" ]] && results+="$(array-to-json arr),"
+            else
+                [[ ! -z "${arr[@]}" ]] && results+="\"${arr[$display]}\":$(array-to-json arr),"
+            fi
         elif ! [[ "${line}" =~ .*row.* || "$line" == "END" ]]
        then
-	    result="${line#*:}"
+            result="${line#*:}"
             trim result
             arr[${line%%:*}]="$result"
-        fi
+        fi 
     done < <($mysql_command "${*:2}" | grep -v -e '^$' | tr -d '\r')
 
-    echo "{ \"$table\": { ${results%,} } }"
+    
+    if [[ "$display" == "$matcher" ]]
+    then
+        echo "{ \"$table\": [ ${results%,} ] }"
+    else
+        echo "{ \"$table\": { ${results%,} } }"
+    fi
 }
 
