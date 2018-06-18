@@ -35,9 +35,9 @@ function mysql-to-json ()
     
     if [[ "$display" == "$matcher" ]]
     then
-        echo "{ \"$table\": [ ${results%,} ] }"
+        echo "{ \"$matcher\": [ ${results%,} ] }"
     else
-        echo "{ \"$table\": { ${results%,} } }"
+        echo "{ \"$matcher\": { ${results%,} } }"
     fi
 }
 
