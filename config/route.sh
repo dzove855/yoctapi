@@ -4,20 +4,16 @@
 #ROUTE['/login':'GET':'none']='saml::buildAuthnRequest'
 #ROUTE['/':'GET':'connect']="html::print::out ${html_dir}/home.html"
 
-api_command="api::call::function"
+api_command="Api::call::function"
 default_api_function="dbconnector"
 
 # router="route::api::mode"
 # router="route::check"
-router="route::api::mode"
+router="Route::api::mode"
 
 # Defaults routes
 #AUTH['/':'GET']="htpasswd"
 #AUTH['/':'POST']="htpasswd"
-#AUTH['/':'GET']="none"
+AUTH['/':'GET']="none"
 
-#RIGHTS['/':'GET']="none"
-
-auth_method="key::auth::start"
-authorization_key="vehbo"
-auth_check="auth::api"
+RIGHTS['/':'GET']="none"

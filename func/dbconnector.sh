@@ -1,5 +1,4 @@
-function db-get ()
-{
+db-get(){
     local matcher="$1" action="$2" _select _where _limit mysql_command="mysql-connect-slave" table display
 
     table="${DB_GET[$matcher:'table']:-$matcher}"
@@ -25,31 +24,25 @@ function db-get ()
     mysql-to-json "$display" "select $_select from $table $_where $_limit"
 }
 
-function db-put ()
-{
+db-put(){
     local matcher="$1" action="$2" _query _json _update value result table
 
     [[ -z "$action" ]] && return
 
-    [[ -z "${POST['json']}" ]] && return
+    [[ -z "${POST[*]}" ]] && return
 
     [[ -z "${DB_PUT[$matcher:'where']}" ]] && return
     
     table="${DB_PUT[$matcher:'table']:-$matcher}"
 
-    _json="$(echo "${POST['json']}" | jq .data)"
-
-    [[ -z "$_json" ]] && return
-
-    json-to-array arr "$_json"
-
     _query="update $table set"
 
-    for value in "${!arr[@]}"
+    for value in "${!POST[@]}"
     do
-        result="${arr[$value]}"
+        result="${POST[$value]}"
 
         # escape ;
+        value="${value/data:}"
         value="${value%%;*}"
         result="${result%%;*}"
 
@@ -65,8 +58,7 @@ function db-put ()
 
 }
 
-function db-delete ()
-{
+db-delete(){
     local matcher="$1" action="$2" table
 
     [[ -z "$action" ]] && return
@@ -78,27 +70,23 @@ function db-delete ()
     mysql-connector-master "delete from $table where ${DB_DELETE[$matcher:'where']}='$action'" &>/dev/null && echo '{ "msg": "Sccesfully removed!" }'
 }
 
-function db-post ()
-{
+db-post(){
     local matcher="$1" _query _json _insert value result table
 
     [[ -z "$matcher" ]] && return
     
-    [[ -z "${POST['json']}" ]] && return
+    [[ -z "${POST[*]}" ]] && return
 
     table="${DB_POST[$matcher:'table']:-$matcher}"
 
-    _json="$(echo "${POST['json']}" | jq .data)"
-
-    json-to-array arr "$_json"
-
     _query="insert into $table set"
     
-    for value in "${!arr[@]}"
+    for value in "${!POST[@]}"
     do
-        result="${arr[$value]}"
+        result="${POST[$value]}"
 
         # escape ;
+        value="${value/data:}"
         value="${value%%;*}"
         result="${result%%;*}"
 
@@ -113,8 +101,7 @@ function db-post ()
     mysql-connector-master "$_query" &>/dev/null && echo '{ "msg": "Succesfully added!" }'
 }
 
-function dbconnector ()
-{
+dbconnector(){
     local matcher action method
 
     matcher="${uri[1]%%;*}"
@@ -134,8 +121,7 @@ function dbconnector ()
 
 }
 
-function fail()
-{
+fail(){
     http::send::status 500
     echo '{ "msg": "Method not allowed!"'
 }
