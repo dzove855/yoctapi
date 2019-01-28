@@ -5,11 +5,10 @@
 #ROUTE['/':'GET':'connect']="html::print::out ${html_dir}/home.html"
 
 api_command="Api::call::function"
-default_api_function="dbconnector"
+default_api_function="Yoctapi::api::main"
 
 # router="route::api::mode"
 # router="route::check"
-router="Route::api::mode"
 
 # Defaults routes
 #AUTH['/':'GET']="htpasswd"
