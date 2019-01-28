@@ -32,6 +32,7 @@ Yoctapi::build::credentials(){
 Yoctapi::get(){
     [private] table="$1"
     [private] search="${uri[2]//;/}"
+    [private] display
     [private:assoc] result
     [private:assoc] output
     [private:assoc] query
@@ -52,11 +53,17 @@ Yoctapi::get(){
         query['filter']="${GET['data':'filter']}"
     fi
 
+    if [[ -z "${GET['data':'display']}" ]]; then
+        display="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'display']}"
+    else
+        display="${GET['data':'display']}"
+    fi
+
     Data::get "result" "$(Data::build::query::get query $table)" "$table"
 
     while read line; do
         while read keys; do
-            output[$table:${result['result':$line:${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'display']}]}:$keys]="${result[result:$line:$keys]}"
+            output[$table:${result['result':$line:$display]}:$keys]="${result[result:$line:$keys]}"
         done < <(Type::array::get::key result:$line result)
     done < <(Type::array::get::key result result)
 
@@ -142,3 +149,4 @@ Yoctapi::delete(){
 
     Api::send::delete output
 }
+
