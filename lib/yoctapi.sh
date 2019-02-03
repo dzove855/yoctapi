@@ -8,7 +8,7 @@ Yoctapi::api::main(){
     [private:assoc] result
     [private] table="${uri[1]}"
 
-    [[ -z "${YOCTAPI['route':$table:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && return 1
+    [[ -z "${YOCTAPI['route':$table:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && { Api::send::not_found; }
 
     # Build creadentials
     Yoctapi::build::credentials 
@@ -67,6 +67,8 @@ Yoctapi::get(){
         done < <(Type::array::get::key result:$line result)
     done < <(Type::array::get::key result result)
 
+    [[ -z "${output[*]}" ]] && Api::send::not_found
+
     Api::send::get output
 }
 
@@ -87,6 +89,8 @@ Yoctapi::post(){
     while read line; do
         output[$table:$line]="${result['result':'1':$line]}"
     done < <(Type::array::get::key result:1 result)
+
+    [[ -z "${output[*]}" ]] && Api::send::not_found
 
     Api::send::post output
 }
@@ -119,6 +123,8 @@ Yoctapi::put(){
         output[$table:$line]="${result['result':'1':$line]}"
     done < <(Type::array::get::key result:1 result)
 
+    [[ -z "${output[*]}" ]] && Api::send::not_found
+
     Api::send::put output
 }
 
@@ -146,6 +152,8 @@ Yoctapi::delete(){
     while read line; do
         output[$table:$line]="${result['result':'1':$line]}"
     done < <(Type::array::get::key result:1 result)
+
+    [[ -z "${output[*]}" ]] && Api::send::not_found
 
     Api::send::delete output
 }
