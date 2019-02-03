@@ -53,10 +53,10 @@ Yoctapi::get(){
         query['filter']="${GET['data':'filter']}"
     fi
 
-    if [[ -z "${GET['data':'objet']}" ]]; then
-        display="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'objet']}"
+    if [[ -z "${GET['data':'object']}" ]]; then
+        display="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'object']}"
     else
-        display="${GET['data':'objet']}"
+        display="${GET['data':'object']}"
     fi
 
     Data::get "result" "$(Data::build::query::get query $table)" "$table"

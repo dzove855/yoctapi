@@ -16,7 +16,7 @@ YOCTAPI['route':'MATCHER':'write':'connector']="mysql"
 
 # GET FILTERS
 YOCTAPI['route':'MATCHER':'request':'get':'filter']="FILER1,FITLER2"
-YOCTAPI['route':'MATCHER':'request':'get':'objet']="OBJET"
+YOCTAPI['route':'MATCHER':'request':'get':'object']="OBJECT"
 YOCTAPI['route':'MATCHER':'request':'get':'search']="SEARCH"
 YOCTAPI['route':'MATCHER':'request':'get':'table']="TABLE"
 
