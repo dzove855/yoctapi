@@ -41,9 +41,11 @@ Yoctapi::get(){
 
     if ! [[ -z "$search" ]]; then 
         if [[ -z "${GET['data':'search']}" ]]; then
-            query['search']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}='$search'"
+            query['search':'column']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}"
+            query['search':'key']="$search"
         else
-            query['search']="${GET['data':'search']}='$search'"
+            query['search':'column']="${GET['data':'search']}"
+            query['search':'key']="$search"
         fi
     fi
 
@@ -58,6 +60,8 @@ Yoctapi::get(){
     else
         display="${GET['data':'object']}"
     fi
+
+    [[ -z "${GET['data':'limit']}" ]] || query['limit']="${GET['data':'limit']}"
 
     Data::get "result" "$(Data::build::query::get query $table)" "$table"
 
@@ -111,9 +115,11 @@ Yoctapi::put(){
 
     if ! [[ -z "$search" ]]; then
         if [[ -z "${GET['data':'search']}" ]]; then
-            query['search']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}='$search'"
+            query['search':'column']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}"
+            query['search':'key']="$search"
         else
-            query['search']="${GET['data':'search']}='$search'"
+            query['search':'column']="${GET['data':'search']}"
+            query['search':'key']="$search"
         fi
     fi
 
@@ -141,9 +147,11 @@ Yoctapi::delete(){
 
     if ! [[ -z "$search" ]]; then
         if [[ -z "${GET['data':'search']}" ]]; then
-            query['search']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}='$search'"
+            query['search':'column']="${YOCTAPI['route':$table:'request':${REQUEST_METHOD,,}:'search']}"
+            query['search':'key']="$search"
         else
-            query['search']="${GET['data':'search']}='$search'"
+            query['search':'column']="${GET['data':'search']}"
+            query['search':'key']="$search"
         fi
     fi
 
