@@ -8,5 +8,5 @@ Package: yoctapi
 Architecture: all
 Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
 Priority: optional
-Depends: jq, yosh, mysql-client
+Depends: jq, yosh, libyosh-gateway
 Description: yoctapi (yoctu shell) - Micro Web Framework lib

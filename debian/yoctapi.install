@@ -1,4 +1,3 @@
-app             var/www/yoctapi/
 auth            var/www/yoctapi/
 bin             var/www/yoctapi/
 config          var/www/yoctapi/
