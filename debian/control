@@ -1,0 +1,12 @@
+Source: yoctapi
+Section: utils
+Maintainer: Dzove855 <dzove855@yoctu.com>
+Build-Depends: debhelper
+Standards-Version: 0.8.20
+
+Package: yoctapi
+Architecture: all
+Maintainer: Dzogovic Vehbo <dzove855@yoctu.com>
+Priority: optional
+Depends: jq, yosh, libyosh-gateway
+Description: yoctapi (yoctu shell) - Micro Web Framework lib

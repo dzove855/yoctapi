@@ -1,0 +1,7 @@
+auth            var/www/yoctapi/
+bin             var/www/yoctapi/
+config          var/www/yoctapi/
+lib             var/www/yoctapi/ 
+public          var/www/yoctapi/
+README.md       usr/share/yoctapi/doc/
+dist/apache2/yoctapi.conf      etc/apache2/sites-available/
