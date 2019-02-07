@@ -19,10 +19,6 @@ Yoctapi::api::main(){
     
     # Run Request
     Yoctapi::${REQUEST_METHOD,,} "$matcher"
-    
-    [public:assoc] AUDIT_CONTEXT
-    AUDIT_CONTEXT['GET']="$(Json::create GET)"
-    audit::log
 }
 
 Yoctapi::parse::get::options(){
