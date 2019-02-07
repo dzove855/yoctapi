@@ -16,6 +16,8 @@ Yoctapi::api::main(){
     DATA['matcher':$matcher]="${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}"
 
     Yoctapi::parse::get::options "$matcher"
+
+    AUDIT['url']="https://audit.test.flash.global"
     
     # Run Request
     Yoctapi::${REQUEST_METHOD,,} "$matcher"
@@ -30,6 +32,12 @@ Yoctapi::parse::get::options(){
             YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:${key#*:}]="${GET[$key]}"
         fi
     done
+
+    for key in "${YOCTAPI_GET_CONFIG_PARAMS[@]}"; do
+        if ! [[ -z "${GET[$key]}" ]]; then
+            YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'config':${key#*:}]="${GET[$key]}"
+        fi
+    done
 }
 
 Yoctapi::build::credentials(){
@@ -40,6 +48,15 @@ Yoctapi::build::credentials(){
     done < <(Type::array::get::key route:$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:credentials YOCTAPI)
 
     return 
+}
+
+Yoctapi::audit(){
+    Audit::set::message "Request $REQUEST_METHOND on $(printf '/%s' "${uri[@]}")"
+    Audit::set::namespace
+    Audit::set::command "$(printf '/%s' "${uri[@]}")"
+
+    [[ -z "${GET[@]}" ]] || Audit::set::context GET "$(Json::create GET)"
+    [[ -z "${POST[@]}" ]] || Audit::set::context POST "$(Json::create POST)"
 }
 
 Yoctapi::get(){
@@ -73,6 +90,12 @@ Yoctapi::get(){
 
     [[ -z "${output[*]}" ]] && Api::send::not_found
 
+    if (( ${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'config':'audit']} )); then
+        Yoctapi::audit
+        Audit::set::context "Selected" "$(Json::create output)"
+        Audit::sent
+    fi
+
     Api::send::get output
 }
 
@@ -95,6 +118,12 @@ Yoctapi::post(){
     done < <(Type::array::get::key result:1 result)
 
     [[ -z "${output[*]}" ]] && Api::send::not_found
+
+    if (( ${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'config':'audit']} )); then
+        Yoctapi::audit
+        Audit::set::context INSERT "$(Json::create output)"
+        Audit::sent
+    fi
 
     Api::send::post output
 }
@@ -126,6 +155,12 @@ Yoctapi::put(){
 
     [[ -z "${output[*]}" ]] && Api::send::not_found
 
+    if (( ${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'config':'audit']} )); then
+        Yoctapi::audit
+        Audot::set::context "Modified" "$(Json::create output)"
+        Audit::sent
+    fi
+
     Api::send::put output
 }
 
@@ -152,6 +187,12 @@ Yoctapi::delete(){
     done < <(Type::array::get::key result:1 result)
 
     [[ -z "${output[*]}" ]] && Api::send::not_found
+
+    if (( ${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'config':'audit']} )); then
+        Yoctapi::audit
+        Audit::set::context "Deleted" "$(Json::create output)"
+        Audit::sent
+    fi
 
     Api::send::delete output
 }
