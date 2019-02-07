@@ -1,4 +1,6 @@
 [public:assoc] YOCTAPI
+[public:array] YOCTAPI_GET_PARAMS
+YOCTAPI_GET_PARAMS=("data:limit" "data:search" "data:object" "data:filter")
 
 # Read Credentials
 YOCTAPI['route':'MATCHER':'read':'credentials':'host']="localhost"
@@ -15,7 +17,7 @@ YOCTAPI['route':'MATCHER':'write':'credentials':'database']="DATABASE"
 YOCTAPI['route':'MATCHER':'write':'connector']="mysql"
 
 # GET FILTERS
-YOCTAPI['route':'MATCHER':'request':'get':'filter']="FILER1,FITLER2"
+YOCTAPI['route':'MATCHER':'request':'get':'filter']="FILTER1,FILTER2"
 YOCTAPI['route':'MATCHER':'request':'get':'object']="OBJECT"
 YOCTAPI['route':'MATCHER':'request':'get':'search']="SEARCH"
 YOCTAPI['route':'MATCHER':'request':'get':'table']="TABLE"
