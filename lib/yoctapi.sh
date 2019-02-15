@@ -7,6 +7,8 @@ YOCTAPI['config':'delete':'action']="write"
 Yoctapi::api::main(){
     [private:assoc] result
     [private] matcher="${uri[1]}"
+    uri[2]="$(urlencode -d "${uri[2]}")"
+
 
     [[ -z "${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && { Api::send::not_found; }
 
