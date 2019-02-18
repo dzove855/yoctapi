@@ -12,6 +12,8 @@ Yoctapi::api::main(){
 
     [[ -z "${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && { Api::send::not_found; }
 
+    Api::check::content_type
+
     # Build creadentials
     Yoctapi::build::credentials 
 
