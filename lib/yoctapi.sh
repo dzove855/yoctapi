@@ -9,7 +9,6 @@ Yoctapi::api::main(){
     [private] matcher="${uri[1]}"
     uri[2]="$(urlencode -d "${uri[2]}")"
 
-
     [[ -z "${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && { Api::send::not_found; }
 
     Api::check::content_type
@@ -20,8 +19,6 @@ Yoctapi::api::main(){
     DATA['matcher':$matcher]="${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}"
 
     Yoctapi::parse::get::options "$matcher"
-
-    AUDIT['url']="https://audit.test.flash.global"
     
     # Run Request
     Yoctapi::${REQUEST_METHOD,,} "$matcher"
