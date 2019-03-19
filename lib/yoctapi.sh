@@ -8,6 +8,8 @@ Yoctapi::api::main(){
     [private:assoc] result
     [private] matcher="${uri[1]}"
 
+    [[ "$REQUEST_METHOD" == "OPTIONS" ]] && { Yoctapi::options "$matcher"; exit; }
+
     [[ -z "${YOCTAPI['route':$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:'connector']}" ]] && { Api::send::not_found; }
 
     Api::check::content_type
@@ -57,6 +59,18 @@ Yoctapi::audit(){
 
     [[ -z "${GET[@]}" ]] || Audit::set::context GET "$(Json::create GET)"
     [[ -z "${POST[@]}" ]] || Audit::set::context POST "$(Json::create POST)"
+}
+
+Yoctapi::options(){
+    [private] matcher="$1"    
+
+    unset HTTP_METHODS
+
+    for key in "GET" "POST" "PUT" "DELETE"; do
+        [[ -z "${YOCTAPI['route':$matcher:'request':${key,,}:'table']}" ]] || HTTP_METHODS+=("$key")
+    done
+
+    Http::send::options
 }
 
 Yoctapi::get(){
