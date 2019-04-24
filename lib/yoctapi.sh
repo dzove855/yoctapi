@@ -47,7 +47,7 @@ Yoctapi::build::credentials(){
  
     while read line; do
         array[connection:$line]="${YOCTAPI[route:$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:credentials:$line]}"
-    done < <(Type::array::get::key route:$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:credentials YOCTAPI)
+    done < <(Type::array::get::key route:$matcher:${YOCTAPI['config':${REQUEST_METHOD,,}:'action']}:credentials: YOCTAPI)
 
     return 
 }
@@ -67,10 +67,17 @@ Yoctapi::options(){
     unset HTTP_METHODS
 
     for key in "GET" "POST" "PUT" "DELETE"; do
-        [[ -z "${YOCTAPI['route':$matcher:'request':${key,,}:'table']}" ]] || HTTP_METHODS+=("$key")
+        if ! [[ -z "${YOCTAPI['route':$matcher:'request':${key,,}:'table']}" ]]; then
+            HTTP_METHODS+=("$key")
+            Yoctapi::options::get
+        fi
     done
 
     Http::send::options
+}
+
+Yoctapi::options::get(){
+    echo 'Not done yet'
 }
 
 Yoctapi::get(){
@@ -80,6 +87,9 @@ Yoctapi::get(){
     [private:assoc] result
     [private:assoc] output
     [private:assoc] query
+    [private:array] key1
+    [private:array] key2
+    [private:array] key3
 
     query['table']="${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'table']}"
 
@@ -92,15 +102,28 @@ Yoctapi::get(){
 
     display="${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'object']}"
 
-    [[ -z "${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'limit']}" ]] || query['limit']="${GET['data':'limit']}"
+    [[ -z "${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'limit']}" ]] || query['limit']="${YOCTAPI['route':$matcher:'request':${REQUEST_METHOD,,}:'limit']}"
 
     Data::get "result" "$(Data::build::query::get query $matcher)" "$matcher"
 
-    while read line; do
-        while read keys; do
-            output[$matcher:${result['result':$line:$display]}:$keys]="${result[result:$line:$keys]}"
-        done < <(Type::array::get::key result:$line result)
-    done < <(Type::array::get::key result result)
+    key1=($(Type::array::get::key "result:" result))
+    key2=($(Type::array::get::key "result:${key1[0]}" result))
+    key3=($(Type::array::get::key "result:*:*" result))
+
+    for line in "${key1[@]}"; do
+        for keys in "${key2[@]}"; do
+            if [[ -z "${result[result:$line:$keys]}" ]]; then 
+                for keys2 in "${key3[@]}"; do
+                    if ! [[ -z "${result[result:$line:$keys:$keys2]}" ]]; then
+                        output[$matcher:${result['result':$line:$display]}:$keys:$keys2]="${result[result:$line:$keys:$keys2]}"
+                        break
+                    fi
+                done
+            else
+                output[$matcher:${result['result':$line:$display]}:$keys]="${result[result:$line:$keys]}"
+            fi
+        done
+    done
 
     [[ -z "${output[*]}" ]] && Api::send::not_found
 
